@@ -1,0 +1,99 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// Satu-satunya pengguna aplikasi ini. Seed awal: username admin.
+model PlannerUser {
+  id           String           @id @default(cuid())
+  username     String           @unique
+  passwordHash String
+  createdAt    DateTime         @default(now())
+  sessions     PlannerSession[]
+}
+
+// Sesi login. Token acak menjadi id; expiresAt jauh ke depan bila
+// pengguna memilih "ingat perangkat ini" saat masuk.
+model PlannerSession {
+  id        String      @id
+  userId    String
+  user      PlannerUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime    @default(now())
+  expiresAt DateTime
+
+  @@index([userId])
+}
+
+// Satu baris jadwal mingguan. day: 1 Senin sampai 7 Minggu.
+// kind: general (punya period pagi/siang/sore/malam), todo (punya done),
+// time (punya time "HH:mm").
+model PlannerSchedule {
+  id        String   @id @default(cuid())
+  day       Int
+  kind      String
+  period    String?
+  time      String?
+  text      String
+  done      Boolean  @default(false)
+  sort      Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([day, kind, sort])
+}
+
+// Pengaturan satu hari latihan: hari istirahat atau tidak, plus catatan.
+model PlannerGymDay {
+  day   Int     @id
+  isRest Boolean @default(false)
+  note  String?
+}
+
+// Satu gerakan latihan pada satu hari.
+model PlannerGymItem {
+  id        String   @id @default(cuid())
+  day       Int
+  text      String
+  detail    String?
+  sort      Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([day, sort])
+}
+
+// Satu goal pada satu bulan. month format "YYYY-MM".
+model PlannerGoal {
+  id        String   @id @default(cuid())
+  month     String
+  text      String
+  done      Boolean  @default(false)
+  sort      Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([month, sort])
+}
+
+// Tanda pada satu tanggal kalender. date format "YYYY-MM-DD".
+// color: hijau, biru, merah, kuning, ungu.
+// reminder: none, email, whatsapp.
+model PlannerMark {
+  date     String @id
+  color    String
+  note     String
+  reminder String @default("none")
+}
+
+// Catatan bebas.
+model PlannerNote {
+  id        String   @id @default(cuid())
+  title     String
+  content   String   @default("")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([updatedAt])
+}

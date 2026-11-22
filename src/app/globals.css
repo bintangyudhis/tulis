@@ -1,0 +1,54 @@
+@import "tailwindcss";
+
+@theme {
+  --color-paper: #f7f5ef;
+  --color-panel: #ffffff;
+  --color-ink: #1e2420;
+  --color-muted: #5f6a61;
+  --color-accent: #17603f;
+  --color-accent-soft: #e3efe7;
+  --color-danger: #b3352b;
+  --color-line: #ddd9cc;
+  --font-sans: var(--font-jakarta);
+  --font-mono: var(--font-plex-mono);
+}
+
+html,
+body {
+  overflow-x: clip;
+}
+
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* Cetak: A4 landscape, sembunyikan navigasi dan tombol. */
+@page {
+  size: A4 landscape;
+  margin: 10mm;
+}
+
+@media print {
+  body {
+    background: #ffffff;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .print-block {
+    display: block !important;
+  }
+  table {
+    page-break-inside: avoid;
+  }
+}
