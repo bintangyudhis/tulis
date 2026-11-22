@@ -158,18 +158,6 @@ export default async function PrintPage({
                 <div key={day} className="flex flex-col bg-white">
                   {kepalaKolom(day)}
                   <div className="flex-1 px-2 py-2">
-                    {cellJam(day).length > 0 && (
-                      <div className="space-y-1">
-                        {cellJam(day).map((i) => (
-                          <div key={i.id} className="text-[11px] leading-snug">
-                            <span className="font-mono font-bold">
-                              {(i.time ?? "").replace(":", ".")}
-                            </span>{" "}
-                            {i.text}
-                          </div>
-                        ))}
-                      </div>
-                    )}
                     {PERIODS.map((p) => {
                       const items = cellGeneral(day, p);
                       if (items.length === 0) return null;
@@ -188,6 +176,23 @@ export default async function PrintPage({
                         </div>
                       );
                     })}
+                    {cellJam(day).length > 0 && (
+                      <div className="mt-3 border-t border-line pt-2">
+                        <div className="text-[9px] font-extrabold tracking-[0.14em] text-accent uppercase">
+                          Jam tertentu
+                        </div>
+                        <div className="mt-0.5 space-y-0.5">
+                          {cellJam(day).map((i) => (
+                            <div key={i.id} className="text-[11px] leading-snug">
+                              <span className="font-mono font-bold">
+                                {(i.time ?? "").replace(":", ".")}
+                              </span>{" "}
+                              {i.text}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                     {cellJam(day).length === 0 &&
                       PERIODS.every((p) => cellGeneral(day, p).length === 0) && (
                         <div className="space-y-3 pt-1">
