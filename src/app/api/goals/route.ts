@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { goalsUntukBulan } from "@/lib/goals";
 import { badRequest, cleanText, requireUser, unauthorized } from "@/lib/api";
 
 function validMonth(value: unknown): value is string {
@@ -10,10 +11,7 @@ export async function GET(req: Request) {
   if (!(await requireUser())) return unauthorized();
   const month = new URL(req.url).searchParams.get("month");
   if (!validMonth(month)) return badRequest("Bulan wajib format YYYY-MM.");
-  const items = await prisma.plannerGoal.findMany({
-    where: { month },
-    orderBy: [{ sort: "asc" }, { createdAt: "asc" }],
-  });
+  const items = await goalsUntukBulan(month);
   return NextResponse.json({ items });
 }
 

@@ -2,7 +2,13 @@
 
 import { Fragment, useState } from "react";
 import type { PlannerGoal } from "@prisma/client";
-import { monthLabel, shiftMonth } from "@/lib/dates";
+import {
+  labelTanggalRoadmap,
+  monthLabel,
+  rentangRoadmap,
+  shiftMonth,
+  tambahHari,
+} from "@/lib/dates";
 import BarisItem from "../BarisItem";
 import RoadmapGoal from "./RoadmapGoal";
 
@@ -106,6 +112,20 @@ export default function PapanGoals({
                 onDelete={() => jalankan(() => kirim(`/api/goals/${i.id}`, "DELETE"))}
               />
               <li className="pb-1">
+                {(i.month !== month ||
+                  i.roadmapStart !== null ||
+                  i.roadmapDays !== null) &&
+                  (() => {
+                    const r = rentangRoadmap(i);
+                    return (
+                      <div className="pb-0.5 text-[11px] text-muted">
+                        {i.month !== month && <>Goal {monthLabel(i.month)} · </>}
+                        Roadmap {labelTanggalRoadmap(r.start)} -{" "}
+                        {labelTanggalRoadmap(tambahHari(r.start, r.days - 1))} (
+                        {r.days} hari)
+                      </div>
+                    );
+                  })()}
                 <button
                   onClick={() => setOpenId(openId === i.id ? null : i.id)}
                   className="text-xs font-bold text-accent hover:underline"

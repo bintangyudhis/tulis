@@ -1,15 +1,12 @@
 import { connection } from "next/server";
-import { prisma } from "@/lib/prisma";
 import { jakartaNow } from "@/lib/dates";
+import { goalsUntukBulan } from "@/lib/goals";
 import PapanGoals from "./PapanGoals";
 
 export default async function GoalsPage() {
   await connection();
   const now = jakartaNow();
-  const items = await prisma.plannerGoal.findMany({
-    where: { month: now.monthStr },
-    orderBy: [{ sort: "asc" }, { createdAt: "asc" }],
-  });
+  const items = await goalsUntukBulan(now.monthStr);
   return (
     <div>
       <h1 className="text-2xl font-extrabold">Goals Bulanan</h1>
