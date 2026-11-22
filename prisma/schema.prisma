@@ -81,10 +81,14 @@ model PlannerGoal {
 // color: hijau, biru, merah, kuning, ungu.
 // reminder: none, email, whatsapp.
 model PlannerMark {
-  date     String @id
-  color    String
-  note     String
-  reminder String @default("none")
+  date       String @id
+  color      String
+  note       String
+  reminder   String @default("none")
+  // Kapan pengingat dikirim: pagi (pagi hari-H) atau sebelum
+  // (5 jam sebelum hari-H, yaitu 19.00 malam sebelumnya).
+  // Pengingat hanya berlaku untuk tanda merah (Penting).
+  remindWhen String @default("pagi")
 }
 
 // Catatan bebas.

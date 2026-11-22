@@ -19,7 +19,7 @@ export default async function TugasPage() {
       <h1 className="text-2xl font-extrabold">Tugas dan Kerjaan</h1>
       <p className="mt-1 text-sm text-muted">
         Semua tugas dengan tenggatnya. Pengingat otomatis dikirim ke WhatsApp
-        pada 3 hari, 1 hari, 6 jam, dan 1 jam sebelum tenggat.
+        pada 1 hari dan 6 jam sebelum tenggat.
       </p>
       <div className="mt-6">
         <PapanTugas initialTasks={tasks} />

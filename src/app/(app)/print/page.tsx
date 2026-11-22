@@ -112,7 +112,6 @@ export default async function PrintPage({
       <div className="text-[13px] font-extrabold">{DAY_NAMES[day - 1]}</div>
       <div className="font-mono text-[10px] text-muted">
         {labelTanggalSingkat(minggu[day - 1])}
-        {minggu[day - 1] === now.dateStr ? " • hari ini" : ""}
       </div>
     </div>
   );
@@ -291,7 +290,6 @@ export default async function PrintPage({
                           }`}
                         >
                           {parseInt(tgl.slice(8), 10)}
-                          {tgl === now.dateStr ? " •" : ""}
                         </div>
                         {mark && warna && (
                           <div

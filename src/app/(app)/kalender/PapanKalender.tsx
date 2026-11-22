@@ -159,6 +159,7 @@ function EditorTanda({
   const [color, setColor] = useState(existing?.color ?? "biru");
   const [note, setNote] = useState(existing?.note ?? "");
   const [reminder, setReminder] = useState(existing?.reminder ?? "none");
+  const [remindWhen, setRemindWhen] = useState(existing?.remindWhen ?? "pagi");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -166,7 +167,13 @@ function EditorTanda({
     setBusy(true);
     setError(null);
     try {
-      await kirim("/api/marks", "PUT", { date, color, note, reminder });
+      await kirim("/api/marks", "PUT", {
+        date,
+        color,
+        note,
+        reminder: color === "merah" ? reminder : "none",
+        remindWhen,
+      });
       await onDone();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Gagal menyimpan.");
@@ -211,18 +218,39 @@ function EditorTanda({
           className="mt-1.5 w-full rounded-lg border border-line bg-panel px-3 py-2 text-sm font-normal normal-case"
         />
       </label>
-      <label className="mt-3 block text-xs font-bold tracking-wide text-muted uppercase">
-        Ingatkan saya
-        <select
-          value={reminder}
-          onChange={(e) => setReminder(e.target.value)}
-          className="mt-1.5 w-full rounded-lg border border-line bg-panel px-3 py-2 text-sm font-normal normal-case"
-        >
-          <option value="none">Tidak usah</option>
-          <option value="email">Lewat email (pagi hari-H)</option>
-          <option value="whatsapp">Lewat WhatsApp (pagi hari-H)</option>
-        </select>
-      </label>
+      {color === "merah" ? (
+        <>
+          <label className="mt-3 block text-xs font-bold tracking-wide text-muted uppercase">
+            Ingatkan saya
+            <select
+              value={reminder}
+              onChange={(e) => setReminder(e.target.value)}
+              className="mt-1.5 w-full rounded-lg border border-line bg-panel px-3 py-2 text-sm font-normal normal-case"
+            >
+              <option value="none">Tidak usah</option>
+              <option value="email">Lewat email</option>
+              <option value="whatsapp">Lewat WhatsApp</option>
+            </select>
+          </label>
+          {reminder !== "none" && (
+            <label className="mt-3 block text-xs font-bold tracking-wide text-muted uppercase">
+              Kapan diingatkan
+              <select
+                value={remindWhen}
+                onChange={(e) => setRemindWhen(e.target.value)}
+                className="mt-1.5 w-full rounded-lg border border-line bg-panel px-3 py-2 text-sm font-normal normal-case"
+              >
+                <option value="sebelum">5 jam sebelum hari-H (pukul 19.00 malam sebelumnya)</option>
+                <option value="pagi">Pagi hari-H</option>
+              </select>
+            </label>
+          )}
+        </>
+      ) : (
+        <p className="mt-3 text-xs text-muted">
+          Pengingat hanya tersedia untuk tanda Penting (merah).
+        </p>
+      )}
       {error && (
         <p role="alert" className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm font-medium text-danger">
           {error}

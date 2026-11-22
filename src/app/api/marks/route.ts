@@ -37,15 +37,24 @@ export async function PUT(req: Request) {
   const reminder = body.reminder === undefined ? "none" : body.reminder;
   if (!REMINDERS.includes(reminder as (typeof REMINDERS)[number]))
     return badRequest("Pilihan pengingat tidak valid.");
+  const remindWhen = body.remindWhen === "sebelum" ? "sebelum" : "pagi";
+  // Pengingat hanya untuk tanda Penting (merah); warna lain dipaksa none.
+  const finalReminder = body.color === "merah" ? (reminder as string) : "none";
   const mark = await prisma.plannerMark.upsert({
     where: { date: body.date },
     create: {
       date: body.date,
       color: body.color as string,
       note,
-      reminder: reminder as string,
+      reminder: finalReminder,
+      remindWhen,
     },
-    update: { color: body.color as string, note, reminder: reminder as string },
+    update: {
+      color: body.color as string,
+      note,
+      reminder: finalReminder,
+      remindWhen,
+    },
   });
   return NextResponse.json({ mark });
 }
