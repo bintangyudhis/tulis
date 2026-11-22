@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { jakartaNow } from "@/lib/dates";
 import TombolKeluar from "./TombolKeluar";
+import NavBawah from "./NavBawah";
 
 const MENU = [
   { href: "/", label: "Beranda" },
@@ -12,6 +13,7 @@ const MENU = [
   { href: "/goals", label: "Goals Bulanan" },
   { href: "/kalender", label: "Kalender" },
   { href: "/catatan", label: "Catatan" },
+  { href: "/keuangan", label: "Keuangan" },
   { href: "/print", label: "Print Jadwal" },
 ];
 
@@ -33,7 +35,7 @@ export default async function AppLayout({
           <span className="hidden shrink-0 font-mono text-xs text-muted lg:block">
             {now.label} WIB
           </span>
-          <nav className="flex min-w-0 flex-1 items-center gap-1 overflow-x-auto whitespace-nowrap">
+          <nav className="hidden min-w-0 flex-1 items-center gap-1 overflow-x-auto whitespace-nowrap md:flex">
             {MENU.map((m) => (
               <Link
                 key={m.href}
@@ -74,10 +76,11 @@ export default async function AppLayout({
           </div>
         </div>
       </header>
-      <main className="py-6">{children}</main>
-      <footer className="no-print border-t border-line py-5 text-center font-mono text-xs text-muted">
+      <main className="py-6 pb-24 md:pb-6">{children}</main>
+      <footer className="no-print hidden border-t border-line py-5 text-center font-mono text-xs text-muted md:block">
         Planner pribadi Bintang Yudhistira
       </footer>
+      <NavBawah />
     </div>
   );
 }

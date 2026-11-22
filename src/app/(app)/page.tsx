@@ -123,6 +123,9 @@ export default async function BerandaPage() {
               Buka gym →
             </Link>
           </div>
+          {gymDay?.title && (
+            <p className="mt-2 text-base font-extrabold">{gymDay.title}</p>
+          )}
           {gymDay?.isRest ? (
             <p className="mt-2 rounded-lg bg-accent-soft px-3 py-2 text-sm font-semibold text-accent">
               Hari istirahat{gymDay.note ? ` — ${gymDay.note}` : ""}

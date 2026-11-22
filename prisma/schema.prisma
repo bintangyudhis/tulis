@@ -48,9 +48,11 @@ model PlannerSchedule {
 
 // Pengaturan satu hari latihan: hari istirahat atau tidak, plus catatan.
 model PlannerGymDay {
-  day   Int     @id
+  day    Int     @id
   isRest Boolean @default(false)
-  note  String?
+  note   String?
+  // Nama sesi latihan hari itu, mis. "Leg Day". Gerakan ada di PlannerGymItem.
+  title  String?
 }
 
 // Satu gerakan latihan pada satu hari.
@@ -145,4 +147,54 @@ model PlannerGoalDayItem {
   sort   Int     @default(0)
 
   @@index([goalId, date])
+}
+
+// Satu catatan uang masuk atau keluar. Entri hasil aturan tetap
+// membawa recurringId dan period (YYYY-MM) dan unik per pasangan itu.
+model PlannerMoneyTx {
+  id          String   @id @default(cuid())
+  kind        String
+  name        String
+  amount      Int
+  date        String
+  recurringId String?
+  period      String?
+  createdAt   DateTime @default(now())
+
+  @@unique([recurringId, period])
+  @@index([date])
+}
+
+// Pemasukan atau pengeluaran tetap: otomatis menjadi transaksi
+// tiap bulan pada tanggal day (dijepit ke akhir bulan bila perlu).
+model PlannerMoneyRule {
+  id        String   @id @default(cuid())
+  kind      String
+  name      String
+  amount    Int
+  day       Int
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+// Tombol cepat untuk mencatat pengeluaran atau pemasukan yang sering
+// muncul. amount kosong berarti jumlah diisi saat memakai shortcut.
+model PlannerMoneyShortcut {
+  id     String @id @default(cuid())
+  kind   String
+  name   String
+  amount Int?
+  sort   Int    @default(0)
+
+  @@index([kind, sort])
+}
+
+// Penanda bahwa entri aturan tetap untuk satu periode sudah dihapus
+// pemilik, supaya tidak dibuat ulang oleh materialisasi.
+model PlannerMoneySkip {
+  id          String @id @default(cuid())
+  recurringId String
+  period      String
+
+  @@unique([recurringId, period])
 }

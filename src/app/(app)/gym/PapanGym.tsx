@@ -86,6 +86,14 @@ export default function PapanGym({
                 </label>
               </div>
 
+              <NamaSesi
+                key={`${day}-${setting?.title ?? ""}`}
+                title={setting?.title ?? ""}
+                onSave={(title) =>
+                  jalankan(() => kirim("/api/gym/day", "PATCH", { day, title }))
+                }
+              />
+
               {isRest ? (
                 <p className="mt-3 rounded-lg bg-accent-soft px-3 py-2 text-sm font-semibold text-accent">
                   Rest day. Pemulihan juga bagian dari latihan.
@@ -133,6 +141,31 @@ export default function PapanGym({
         })}
       </div>
     </div>
+  );
+}
+
+// Nama sesi latihan hari itu, mis. Leg Day. Tersimpan saat kursor pindah.
+function NamaSesi({
+  title,
+  onSave,
+}: {
+  title: string;
+  onSave: (title: string | null) => Promise<void>;
+}) {
+  const [value, setValue] = useState(title);
+  return (
+    <input
+      value={value}
+      onChange={(e) => setValue(e.target.value)}
+      onBlur={() => {
+        const v = value.trim();
+        if (v !== title) void onSave(v || null);
+      }}
+      placeholder="Nama sesi, mis. Leg Day"
+      maxLength={60}
+      aria-label="Nama sesi latihan"
+      className="mt-2 w-full rounded-md border border-dashed border-line bg-transparent px-2 py-1.5 text-sm font-extrabold placeholder:font-semibold"
+    />
   );
 }
 

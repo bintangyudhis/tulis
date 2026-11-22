@@ -143,9 +143,10 @@ export default async function PrintPage({
         ))}
       </div>
 
+      <div className="overflow-x-auto pb-2 print:overflow-visible print:pb-0">
       <div
         className={`mt-6 rounded-xl border border-line bg-white p-5 print:rounded-none print:border-0 print:p-0 ${
-          jenis === "todo" ? "sheet-portrait" : "sheet-landscape"
+          jenis === "todo" ? "sheet-portrait min-w-[580px]" : "sheet-landscape min-w-[860px]"
         }`}
       >
         <Kepala judul={judulSheet} sub={subSheet} />
@@ -319,6 +320,9 @@ export default async function PrintPage({
                 <div key={day} className="flex flex-col bg-white">
                   {kepalaKolom(day)}
                   <div className="flex-1 px-2 py-2">
+                    {setting?.title && (
+                      <div className="mb-1 text-[12px] font-extrabold">{setting.title}</div>
+                    )}
                     {setting?.isRest ? (
                       <span className="exact inline-block rounded bg-[#efead9] px-2 py-0.5 text-[11px] font-extrabold">
                         Istirahat
@@ -348,6 +352,7 @@ export default async function PrintPage({
         )}
 
         <Kaki />
+      </div>
       </div>
     </div>
   );

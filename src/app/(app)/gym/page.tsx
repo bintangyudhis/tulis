@@ -16,8 +16,8 @@ export default async function GymPage() {
     <div>
       <h1 className="text-2xl font-extrabold">Jadwal Gym</h1>
       <p className="mt-1 text-sm text-muted">
-        Susun gerakan per hari, tandai hari istirahat, dan beri catatan fokus
-        latihan. Semua bisa diganti kapan saja.
+        Beri nama sesi tiap hari (mis. Leg Day), lalu isi gerakannya di
+        bawah nama sesi itu. Tandai hari istirahat bila perlu.
       </p>
       <div className="mt-6">
         <PapanGym initialDays={days} initialItems={items} todayIndex={now.dayIndex} />

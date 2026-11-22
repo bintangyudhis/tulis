@@ -14,7 +14,7 @@ export async function PATCH(req: Request) {
   const day = body.day;
   if (typeof day !== "number" || !Number.isInteger(day) || day < 1 || day > 7)
     return badRequest("Hari tidak valid.");
-  const data: { isRest?: boolean; note?: string | null } = {};
+  const data: { isRest?: boolean; note?: string | null; title?: string | null } = {};
   if (body.isRest !== undefined) {
     if (typeof body.isRest !== "boolean") return badRequest("Nilai istirahat tidak valid.");
     data.isRest = body.isRest;
@@ -27,9 +27,22 @@ export async function PATCH(req: Request) {
       data.note = note;
     }
   }
+  if (body.title !== undefined) {
+    if (body.title === null || body.title === "") data.title = null;
+    else {
+      const title = cleanText(body.title, 60);
+      if (!title) return badRequest("Nama sesi terlalu panjang.");
+      data.title = title;
+    }
+  }
   const row = await prisma.plannerGymDay.upsert({
     where: { day },
-    create: { day, isRest: data.isRest ?? false, note: data.note ?? null },
+    create: {
+      day,
+      isRest: data.isRest ?? false,
+      note: data.note ?? null,
+      title: data.title ?? null,
+    },
     update: data,
   });
   return NextResponse.json({ day: row });
