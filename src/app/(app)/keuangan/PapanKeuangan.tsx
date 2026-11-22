@@ -114,6 +114,12 @@ export default function PapanKeuangan({
     await jalankan(async () => {}, baru);
   }
 
+  async function lompatBulan(bulan: string) {
+    if (!/^\d{4}-\d{2}$/.test(bulan)) return;
+    setMonth(bulan);
+    await jalankan(async () => {}, bulan);
+  }
+
   async function tambahTx(e: React.FormEvent) {
     e.preventDefault();
     const nominal = parseInt(amount, 10);
@@ -208,6 +214,19 @@ export default function PapanKeuangan({
           className="rounded-lg border border-line bg-panel px-3 py-2 text-sm font-bold"
         >
           Bulan depan →
+        </button>
+        <input
+          type="month"
+          value={month}
+          onChange={(e) => void lompatBulan(e.target.value)}
+          aria-label="Pilih bulan dan tahun"
+          className="rounded-lg border border-line bg-panel px-3 py-2 text-sm font-bold"
+        />
+        <button
+          onClick={() => void lompatBulan(todayStr.slice(0, 7))}
+          className="rounded-lg border border-line bg-panel px-3 py-2 text-sm font-bold"
+        >
+          Bulan ini
         </button>
       </div>
 
