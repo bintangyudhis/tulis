@@ -28,14 +28,14 @@ export default async function AppLayout({
   return (
     <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
       <header className="no-print sticky top-0 z-40 -mx-4 border-b border-line bg-paper/95 px-4 backdrop-blur sm:-mx-6 sm:px-6">
-        <div className="flex items-center gap-2 py-3">
-          <Link href="/" className="shrink-0 text-xl font-extrabold tracking-tight">
+        <div className="flex flex-wrap items-center gap-2 py-3">
+          <Link href="/" className="order-1 shrink-0 text-xl font-extrabold tracking-tight">
             Tulis
           </Link>
-          <span className="hidden shrink-0 font-mono text-xs text-muted lg:block">
+          <span className="order-2 hidden shrink-0 font-mono text-xs text-muted lg:block">
             {now.label} WIB
           </span>
-          <nav className="hidden min-w-0 flex-1 items-center gap-1 overflow-x-auto whitespace-nowrap md:flex">
+          <nav className="order-4 hidden w-full flex-wrap items-center gap-1 md:flex">
             {MENU.map((m) => (
               <Link
                 key={m.href}
@@ -46,7 +46,7 @@ export default async function AppLayout({
               </Link>
             ))}
           </nav>
-          <div className="flex shrink-0 items-center gap-0.5 border-l border-line pl-2">
+          <div className="order-3 ml-auto flex shrink-0 items-center gap-0.5 border-l border-line pl-2">
             <Link
               href="/pengaturan"
               title="Pengaturan"
