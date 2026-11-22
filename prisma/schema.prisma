@@ -97,3 +97,29 @@ model PlannerNote {
 
   @@index([updatedAt])
 }
+
+// Tugas atau kerjaan dengan tenggat waktu. deadline disimpan sebagai
+// momen absolut; masukan formulir ditafsirkan sebagai waktu Jakarta.
+model PlannerTask {
+  id        String   @id @default(cuid())
+  title     String
+  note      String   @default("")
+  deadline  DateTime
+  done      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([deadline])
+}
+
+// Catatan pengingat deadline yang sudah terkirim, satu baris per
+// tugas per ambang (72h, 24h, 6h, 1h), supaya tidak terkirim dobel.
+model PlannerReminderLog {
+  id        String   @id
+  taskId    String
+  threshold String
+  sentAt    DateTime @default(now())
+
+  @@unique([taskId, threshold])
+  @@index([taskId])
+}

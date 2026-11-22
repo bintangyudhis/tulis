@@ -8,6 +8,7 @@ const MENU = [
   { href: "/", label: "Beranda" },
   { href: "/jadwal", label: "Jadwal Harian" },
   { href: "/gym", label: "Gym" },
+  { href: "/tugas", label: "Tugas" },
   { href: "/goals", label: "Goals Bulanan" },
   { href: "/kalender", label: "Kalender" },
   { href: "/catatan", label: "Catatan" },

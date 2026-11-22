@@ -32,15 +32,48 @@ textarea:focus-visible {
   outline-offset: 2px;
 }
 
-/* Cetak: A4 landscape, sembunyikan navigasi dan tombol. */
+/* Cetak: halaman bernama per jenis jadwal. Harian dan kalender
+   landscape, todo portrait. Warna latar ikut tercetak persis. */
 @page {
   size: A4 landscape;
   margin: 10mm;
 }
 
+@page pg-landscape {
+  size: A4 landscape;
+  margin: 10mm;
+}
+
+@page pg-portrait {
+  size: A4 portrait;
+  margin: 10mm;
+}
+
+.sheet-landscape {
+  page: pg-landscape;
+}
+
+.sheet-portrait {
+  page: pg-portrait;
+}
+
+.exact {
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
 @media print {
   body {
     background: #ffffff;
+  }
+  body > div {
+    max-width: none !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+  main {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
   }
   .no-print {
     display: none !important;

@@ -104,3 +104,31 @@ export function dateLabel(dateStr: string): string {
   const idx = wd === 0 ? 7 : wd;
   return `${DAY_NAMES[idx - 1]}, ${d} ${MONTH_NAMES[m - 1]} ${y}`;
 }
+
+// Tanggal Senin..Minggu pada minggu berjalan (7 string YYYY-MM-DD).
+export function weekDates(now: JakartaNow): string[] {
+  const [y, m, d] = now.dateStr.split("-").map((x) => parseInt(x, 10));
+  const monday = new Date(Date.UTC(y, m - 1, d - (now.dayIndex - 1)));
+  const out: string[] = [];
+  for (let i = 0; i < 7; i++) {
+    const t = new Date(monday.getTime() + i * 86400000);
+    out.push(
+      `${t.getUTCFullYear()}-${String(t.getUTCMonth() + 1).padStart(2, "0")}-${String(t.getUTCDate()).padStart(2, "0")}`,
+    );
+  }
+  return out;
+}
+
+// "24 Nov" dari "2026-11-24".
+export function labelTanggalSingkat(dateStr: string): string {
+  const [, m, d] = dateStr.split("-").map((x) => parseInt(x, 10));
+  return `${d} ${MONTH_NAMES[m - 1].slice(0, 3)}`;
+}
+
+// "24 – 30 November 2026" dari tanggal Senin dan Minggu.
+export function labelRentangMinggu(senin: string, minggu: string): string {
+  const [y1, m1, d1] = senin.split("-").map((x) => parseInt(x, 10));
+  const [y2, m2, d2] = minggu.split("-").map((x) => parseInt(x, 10));
+  if (m1 === m2) return `${d1} – ${d2} ${MONTH_NAMES[m1 - 1]} ${y1}`;
+  return `${d1} ${MONTH_NAMES[m1 - 1]} – ${d2} ${MONTH_NAMES[m2 - 1]} ${y2}`;
+}
