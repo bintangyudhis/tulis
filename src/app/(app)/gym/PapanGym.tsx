@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { PlannerGymDay, PlannerGymItem } from "@prisma/client";
 import { DAY_NAMES } from "@/lib/dates";
 import BarisItem from "../BarisItem";
@@ -87,7 +87,6 @@ export default function PapanGym({
               </div>
 
               <NamaSesi
-                key={`${day}-${setting?.title ?? ""}`}
                 title={setting?.title ?? ""}
                 onSave={(title) =>
                   jalankan(() => kirim("/api/gym/day", "PATCH", { day, title }))
@@ -130,7 +129,6 @@ export default function PapanGym({
               )}
 
               <CatatanHari
-                key={`${day}-${setting?.note ?? ""}`}
                 note={setting?.note ?? ""}
                 onSave={(note) =>
                   jalankan(() => kirim("/api/gym/day", "PATCH", { day, note }))
@@ -153,10 +151,16 @@ function NamaSesi({
   onSave: (title: string | null) => Promise<void>;
 }) {
   const [value, setValue] = useState(title);
+  useEffect(() => {
+    setValue(title);
+  }, [title]);
   return (
     <input
       value={value}
       onChange={(e) => setValue(e.target.value)}
+      onKeyDown={(e) => {
+        if (e.key === "Enter") e.currentTarget.blur();
+      }}
       onBlur={() => {
         const v = value.trim();
         if (v !== title) void onSave(v || null);
@@ -222,6 +226,9 @@ function CatatanHari({
   onSave: (note: string | null) => Promise<void>;
 }) {
   const [value, setValue] = useState(note);
+  useEffect(() => {
+    setValue(note);
+  }, [note]);
   const [busy, setBusy] = useState(false);
   return (
     <div className="mt-3 flex gap-2">

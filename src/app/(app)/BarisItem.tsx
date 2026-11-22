@@ -82,7 +82,7 @@ export default function BarisItem({
           setDraft(text);
           setEditing(true);
         }}
-        className="rounded px-1 text-xs font-semibold text-muted opacity-0 group-hover:opacity-100 hover:text-ink"
+        className="rounded px-1 text-xs font-semibold text-muted hover:text-ink lg:opacity-0 lg:group-hover:opacity-100"
         aria-label="Ubah"
       >
         Ubah
@@ -91,7 +91,7 @@ export default function BarisItem({
         onClick={() => {
           if (window.confirm("Hapus item ini?")) void onDelete();
         }}
-        className="rounded px-1 text-xs font-bold text-danger opacity-0 group-hover:opacity-100"
+        className="rounded px-1 text-xs font-bold text-danger lg:opacity-0 lg:group-hover:opacity-100"
         aria-label="Hapus"
       >
         ×
