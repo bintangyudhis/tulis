@@ -3,12 +3,21 @@ import { connection } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { jakartaNow, monthLabel, PERIODS } from "@/lib/dates";
 import { WARNA } from "@/lib/warna";
+import { labelDeadline, sisaWaktu } from "@/lib/tugas";
 import TodoHariIni from "./TodoHariIni";
+
+function chipDeadline(deadline: Date): string {
+  const sisa = deadline.getTime() - Date.now();
+  if (sisa < 0 || sisa <= 6 * 3600 * 1000)
+    return "bg-red-100 font-bold text-red-800";
+  if (sisa <= 24 * 3600 * 1000) return "bg-yellow-100 font-bold text-yellow-800";
+  return "bg-accent-soft text-ink";
+}
 
 export default async function BerandaPage() {
   await connection();
   const now = jakartaNow();
-  const [jadwal, gymDay, gymItems, mark, goals] = await Promise.all([
+  const [jadwal, gymDay, gymItems, mark, goals, tugasAktif] = await Promise.all([
     prisma.plannerSchedule.findMany({
       where: { day: now.dayIndex },
       orderBy: [{ kind: "asc" }, { sort: "asc" }],
@@ -20,7 +29,12 @@ export default async function BerandaPage() {
     }),
     prisma.plannerMark.findUnique({ where: { date: now.dateStr } }),
     prisma.plannerGoal.findMany({ where: { month: now.monthStr } }),
+    prisma.plannerTask.findMany({
+      where: { done: false },
+      orderBy: { deadline: "asc" },
+    }),
   ]);
+  const tugasTerdekat = tugasAktif.slice(0, 5);
 
   const umum = jadwal
     .filter((i) => i.kind === "general")
@@ -54,7 +68,7 @@ export default async function BerandaPage() {
       <div className="mt-6 grid gap-4 lg:grid-cols-2">
         <section className="rounded-xl border border-line bg-panel p-4">
           <div className="flex items-baseline justify-between">
-            <h2 className="font-extrabold">Jadwal Umum</h2>
+            <h2 className="font-extrabold">Jadwal Harian</h2>
             <Link href="/jadwal" className="text-xs font-bold text-accent">
               Buka jadwal →
             </Link>
@@ -161,6 +175,43 @@ export default async function BerandaPage() {
                   </li>
                 ))}
               </ul>
+            </>
+          )}
+        </section>
+
+        <section className="rounded-xl border border-line bg-panel p-4">
+          <div className="flex items-baseline justify-between">
+            <h2 className="font-extrabold">Deadline Tugas Terdekat</h2>
+            <Link href="/tugas" className="text-xs font-bold text-accent">
+              Buka tugas →
+            </Link>
+          </div>
+          {tugasTerdekat.length === 0 ? (
+            <p className="mt-2 text-sm text-muted">
+              Tidak ada tugas aktif. Santai, semua beres.
+            </p>
+          ) : (
+            <>
+              <ul className="mt-2 space-y-2">
+                {tugasTerdekat.map((t) => (
+                  <li key={t.id} className="flex items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <div className="text-sm font-semibold">{t.title}</div>
+                      <div className="text-xs text-muted">{labelDeadline(t.deadline)}</div>
+                    </div>
+                    <span
+                      className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] ${chipDeadline(t.deadline)}`}
+                    >
+                      {sisaWaktu(t.deadline)}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+              {tugasAktif.length > tugasTerdekat.length && (
+                <p className="mt-2 text-xs text-muted">
+                  dan {tugasAktif.length - tugasTerdekat.length} tugas aktif lainnya
+                </p>
+              )}
             </>
           )}
         </section>

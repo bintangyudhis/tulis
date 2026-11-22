@@ -26,14 +26,14 @@ export default async function AppLayout({
   return (
     <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
       <header className="no-print sticky top-0 z-40 -mx-4 border-b border-line bg-paper/95 px-4 backdrop-blur sm:-mx-6 sm:px-6">
-        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 py-3">
-          <Link href="/" className="mr-2 text-xl font-extrabold tracking-tight">
+        <div className="flex items-center gap-2 py-3">
+          <Link href="/" className="shrink-0 text-xl font-extrabold tracking-tight">
             Tulis
           </Link>
-          <span className="hidden font-mono text-xs text-muted md:block">
+          <span className="hidden shrink-0 font-mono text-xs text-muted lg:block">
             {now.label} WIB
           </span>
-          <nav className="flex flex-wrap items-center gap-1">
+          <nav className="flex min-w-0 flex-1 items-center gap-1 overflow-x-auto whitespace-nowrap">
             {MENU.map((m) => (
               <Link
                 key={m.href}
@@ -44,12 +44,31 @@ export default async function AppLayout({
               </Link>
             ))}
           </nav>
-          <div className="ml-auto flex items-center gap-1 border-l border-line pl-2">
+          <div className="flex shrink-0 items-center gap-0.5 border-l border-line pl-2">
             <Link
               href="/pengaturan"
-              className="rounded-lg px-3 py-2 text-sm font-semibold text-muted hover:bg-accent-soft hover:text-ink"
+              title="Pengaturan"
+              aria-label="Pengaturan"
+              className="rounded-lg p-2 text-muted hover:bg-accent-soft hover:text-ink"
             >
-              Pengaturan
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                className="h-5 w-5"
+                aria-hidden="true"
+              >
+                <circle cx="12" cy="12" r="3.2" />
+                <circle
+                  cx="12"
+                  cy="12"
+                  r="6.4"
+                  strokeWidth="2.6"
+                  strokeDasharray="3.4 2.9"
+                />
+              </svg>
             </Link>
             <TombolKeluar />
           </div>
