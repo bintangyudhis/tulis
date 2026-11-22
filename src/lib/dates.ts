@@ -146,3 +146,33 @@ export function jumlahHari(monthStr: string): number {
   const [y, m] = monthStr.split("-").map((x) => parseInt(x, 10));
   return new Date(Date.UTC(y, m, 0)).getUTCDate();
 }
+
+// Geser tanggal "YYYY-MM-DD" sebanyak n hari (boleh negatif).
+export function tambahHari(dateStr: string, n: number): string {
+  const [y, m, d] = dateStr.split("-").map((x) => parseInt(x, 10));
+  const t = new Date(Date.UTC(y, m - 1, d) + n * 86400000);
+  const yy = t.getUTCFullYear();
+  const mm = String(t.getUTCMonth() + 1).padStart(2, "0");
+  const dd = String(t.getUTCDate()).padStart(2, "0");
+  return `${yy}-${mm}-${dd}`;
+}
+
+// "Senin, 1 Des 2026" dari "2026-12-01", untuk kepala kartu roadmap.
+export function labelTanggalRoadmap(dateStr: string): string {
+  const [y, m, d] = dateStr.split("-").map((x) => parseInt(x, 10));
+  const wd = new Date(Date.UTC(y, m - 1, d)).getUTCDay();
+  const idx = wd === 0 ? 7 : wd;
+  return `${DAY_NAMES[idx - 1]}, ${d} ${MONTH_NAMES[m - 1].slice(0, 3)} ${y}`;
+}
+
+// Rentang efektif roadmap sebuah goal: tanggal mulai + jumlah hari.
+export function rentangRoadmap(goal: {
+  month: string;
+  roadmapStart: string | null;
+  roadmapDays: number | null;
+}): { start: string; days: number } {
+  return {
+    start: goal.roadmapStart ?? `${goal.month}-01`,
+    days: goal.roadmapDays ?? jumlahHari(goal.month),
+  };
+}

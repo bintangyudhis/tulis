@@ -24,6 +24,25 @@ export async function PATCH(
     if (typeof body.done !== "boolean") return badRequest("Nilai selesai tidak valid.");
     data.done = body.done;
   }
+  if (body.roadmapStart !== undefined) {
+    if (body.roadmapStart === null) data.roadmapStart = null;
+    else if (
+      typeof body.roadmapStart === "string" &&
+      /^\d{4}-\d{2}-\d{2}$/.test(body.roadmapStart)
+    )
+      data.roadmapStart = body.roadmapStart;
+    else return badRequest("Tanggal mulai roadmap tidak valid.");
+  }
+  if (body.roadmapDays !== undefined) {
+    if (body.roadmapDays === null) data.roadmapDays = null;
+    else if (
+      Number.isInteger(body.roadmapDays) &&
+      (body.roadmapDays as number) >= 1 &&
+      (body.roadmapDays as number) <= 366
+    )
+      data.roadmapDays = body.roadmapDays;
+    else return badRequest("Jumlah hari roadmap harus 1 sampai 366.");
+  }
   const item = await prisma.plannerGoal.update({ where: { id }, data });
   return NextResponse.json({ item });
 }
@@ -34,7 +53,7 @@ export async function DELETE(
 ) {
   if (!(await requireUser())) return unauthorized();
   const { id } = await params;
-  await prisma.plannerGoalDay.deleteMany({ where: { goalId: id } });
+  await prisma.plannerGoalDayItem.deleteMany({ where: { goalId: id } });
   await prisma.plannerGoal.delete({ where: { id } });
   return NextResponse.json({ ok: true });
 }

@@ -113,7 +113,14 @@ export default function PapanGoals({
                   {openId === i.id ? "Tutup roadmap harian" : "Roadmap harian (Day 1 - akhir bulan)"}
                 </button>
                 {openId === i.id && (
-                  <RoadmapGoal goalId={i.id} month={month} todayStr={todayStr} />
+                  <RoadmapGoal
+                    key={`${i.id}:${i.roadmapStart ?? ""}:${i.roadmapDays ?? ""}`}
+                    goal={i}
+                    todayStr={todayStr}
+                    onGoalUpdated={async () => {
+                      await muat(month);
+                    }}
+                  />
                 )}
               </li>
             </Fragment>

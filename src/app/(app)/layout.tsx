@@ -13,7 +13,6 @@ const MENU = [
   { href: "/kalender", label: "Kalender" },
   { href: "/catatan", label: "Catatan" },
   { href: "/print", label: "Print Jadwal" },
-  { href: "/pengaturan", label: "Pengaturan" },
 ];
 
 export default async function AppLayout({
@@ -31,7 +30,7 @@ export default async function AppLayout({
           <Link href="/" className="mr-2 text-xl font-extrabold tracking-tight">
             Tulis
           </Link>
-          <span className="mr-auto hidden font-mono text-xs text-muted md:block">
+          <span className="hidden font-mono text-xs text-muted md:block">
             {now.label} WIB
           </span>
           <nav className="flex flex-wrap items-center gap-1">
@@ -44,8 +43,16 @@ export default async function AppLayout({
                 {m.label}
               </Link>
             ))}
-            <TombolKeluar />
           </nav>
+          <div className="ml-auto flex items-center gap-1 border-l border-line pl-2">
+            <Link
+              href="/pengaturan"
+              className="rounded-lg px-3 py-2 text-sm font-semibold text-muted hover:bg-accent-soft hover:text-ink"
+            >
+              Pengaturan
+            </Link>
+            <TombolKeluar />
+          </div>
         </div>
       </header>
       <main className="py-6">{children}</main>

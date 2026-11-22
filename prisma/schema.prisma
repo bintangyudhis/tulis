@@ -67,12 +67,17 @@ model PlannerGymItem {
 
 // Satu goal pada satu bulan. month format "YYYY-MM".
 model PlannerGoal {
-  id        String   @id @default(cuid())
-  month     String
-  text      String
-  done      Boolean  @default(false)
-  sort      Int      @default(0)
-  createdAt DateTime @default(now())
+  id           String   @id @default(cuid())
+  month        String
+  text         String
+  done         Boolean  @default(false)
+  sort         Int      @default(0)
+  createdAt    DateTime @default(now())
+  // Rentang roadmap harian. Kosong berarti bawaan: mulai tanggal 1
+  // bulan goal dan sepanjang bulan itu. Bila diisi, roadmap bebas
+  // lintas bulan sampai 366 hari.
+  roadmapStart String?
+  roadmapDays  Int?
 
   @@index([month, sort])
 }
@@ -128,15 +133,16 @@ model PlannerReminderLog {
   @@index([taskId])
 }
 
-// Roadmap harian untuk satu goal bulanan: rencana (mis. materi belajar)
-// dan status selesai untuk satu tanggal di bulan goal itu.
-model PlannerGoalDay {
+// Satu butir rencana pada roadmap harian sebuah goal. Satu hari boleh
+// berisi banyak butir; date adalah tanggal hari itu (YYYY-MM-DD) dan
+// harus berada di dalam rentang roadmap goal.
+model PlannerGoalDayItem {
   id     String  @id @default(cuid())
   goalId String
   date   String
-  text   String  @default("")
+  text   String
   done   Boolean @default(false)
+  sort   Int     @default(0)
 
-  @@unique([goalId, date])
-  @@index([goalId])
+  @@index([goalId, date])
 }
