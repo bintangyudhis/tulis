@@ -81,6 +81,22 @@ textarea:focus-visible {
   .print-block {
     display: block !important;
   }
+  /* Lembar memenuhi kertas persis: tinggi sama dengan area cetak
+     A4 bermargin 10mm (landscape 190mm, portrait 277mm), margin atas
+     layar dibuang, dan luapan dipotong supaya tidak ada halaman
+     kedua yang kosong. */
+  .sheet-landscape {
+    height: 190mm;
+    margin-top: 0 !important;
+    overflow: hidden;
+    break-inside: avoid;
+  }
+  .sheet-portrait {
+    height: 277mm;
+    margin-top: 0 !important;
+    overflow: hidden;
+    break-inside: avoid;
+  }
   table {
     page-break-inside: avoid;
   }

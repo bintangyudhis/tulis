@@ -148,7 +148,7 @@ export default async function PrintPage({
 
       <div className="overflow-x-auto pb-2 print:overflow-visible print:pb-0">
       <div
-        className={`mt-6 rounded-xl border border-line bg-white p-5 print:rounded-none print:border-0 print:p-0 ${
+        className={`mt-6 rounded-xl border border-line bg-white p-5 print:rounded-none print:border-0 print:p-0 print:flex print:flex-col ${
           jenis === "todo" ? "sheet-portrait min-w-[580px]" : "sheet-landscape min-w-[860px]"
         }`}
       >
@@ -156,7 +156,7 @@ export default async function PrintPage({
 
         {jenis === "harian" && (
           <>
-            <div className="mt-4 grid grid-cols-7 gap-px overflow-hidden rounded-lg border-2 border-ink bg-line">
+            <div className="mt-4 grid grid-cols-7 gap-px overflow-hidden rounded-lg border-2 border-ink bg-line print:flex-1 print:[grid-template-rows:1fr]">
               {DAYS.map((day) => (
                 <div key={day} className="flex flex-col bg-white">
                   {kepalaKolom(day)}
@@ -207,7 +207,7 @@ export default async function PrintPage({
         )}
 
         {jenis === "perjam" && (
-          <div className="mt-4 grid grid-cols-7 gap-px overflow-hidden rounded-lg border-2 border-ink bg-line">
+          <div className="mt-4 grid grid-cols-7 gap-px overflow-hidden rounded-lg border-2 border-ink bg-line print:flex-1 print:[grid-template-rows:1fr]">
             {DAYS.map((day) => (
               <div key={day} className="flex flex-col bg-white">
                 {kepalaKolom(day)}
@@ -237,7 +237,7 @@ export default async function PrintPage({
         )}
 
         {jenis === "todo" && (
-          <div className="mt-4 grid grid-cols-2 gap-4">
+          <div className="mt-4 grid grid-cols-2 gap-4 print:flex-1 print:auto-rows-fr">
             {DAYS.map((day) => {
               const items = cellTodo(day);
               return (
@@ -281,7 +281,7 @@ export default async function PrintPage({
 
         {jenis === "kalender" && (
           <>
-            <div className="mt-4 grid grid-cols-7 gap-px overflow-hidden rounded-lg border-2 border-ink bg-line">
+            <div className="mt-4 grid grid-cols-7 gap-px overflow-hidden rounded-lg border-2 border-ink bg-line print:flex-1 print:auto-rows-fr">
               {DAY_NAMES.map((d) => (
                 <div
                   key={d}
@@ -334,7 +334,7 @@ export default async function PrintPage({
         )}
 
         {jenis === "gym" && (
-          <div className="mt-4 grid grid-cols-7 gap-px overflow-hidden rounded-lg border-2 border-ink bg-line">
+          <div className="mt-4 grid grid-cols-7 gap-px overflow-hidden rounded-lg border-2 border-ink bg-line print:flex-1 print:[grid-template-rows:1fr]">
             {DAYS.map((day) => {
               const setting = gymDayMap.get(day);
               return (
