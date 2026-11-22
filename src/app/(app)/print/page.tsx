@@ -7,18 +7,18 @@ import {
   calendarCells,
   dateLabel,
   jakartaNow,
-  labelRentangMinggu,
-  labelTanggalSingkat,
   monthLabel,
-  weekDates,
 } from "@/lib/dates";
 import { WARNA } from "@/lib/warna";
 import TombolPrint from "./TombolPrint";
 
 // Halaman print: satu jenis jadwal per cetakan, dipilih lewat tab.
-// Desain mengikuti planner cetak minimal: kolom hari dengan tanggal
-// asli, kolom akhir pekan teduh, strip goals di bawah, legenda warna
-// untuk kalender, dan garis kosong untuk coretan tangan pada todo.
+// Lembar harian, todo, dan gym adalah templat mingguan berulang: hanya
+// nama hari yang tampil, TANPA tanggal, supaya satu cetakan bisa dipakai
+// berminggu-minggu. Tanggal lengkap hanya tampil di lembar kalender.
+// Desain mengikuti planner cetak minimal: kolom akhir pekan teduh,
+// strip goals di bawah, legenda warna untuk kalender, dan garis kosong
+// untuk coretan tangan pada todo.
 const JENIS = [
   { key: "harian", label: "Jadwal Harian" },
   { key: "todo", label: "To Do List" },
@@ -58,7 +58,6 @@ export default async function PrintPage({
     ? (sp.jenis as Jenis)
     : "harian";
   const now = jakartaNow();
-  const minggu = weekDates(now);
 
   const [jadwal, gymDays, gymItems, goals, marks] = await Promise.all([
     prisma.plannerSchedule.findMany({
@@ -101,7 +100,7 @@ export default async function PrintPage({
   const subSheet =
     jenis === "kalender"
       ? `${dateLabel(now.dateStr)} — tanda berwarna bulan ini`
-      : `Minggu ${labelRentangMinggu(minggu[0], minggu[6])}`;
+      : "Berlaku setiap minggu";
 
   const kepalaKolom = (day: number) => (
     <div
@@ -109,10 +108,7 @@ export default async function PrintPage({
         day >= 6 ? "bg-[#efead9]" : "bg-accent-soft"
       }`}
     >
-      <div className="text-[13px] font-extrabold">{DAY_NAMES[day - 1]}</div>
-      <div className="font-mono text-[10px] text-muted">
-        {labelTanggalSingkat(minggu[day - 1])}
-      </div>
+      <div className="py-0.5 text-[13px] font-extrabold">{DAY_NAMES[day - 1]}</div>
     </div>
   );
 
