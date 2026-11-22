@@ -127,3 +127,16 @@ model PlannerReminderLog {
   @@unique([taskId, threshold])
   @@index([taskId])
 }
+
+// Roadmap harian untuk satu goal bulanan: rencana (mis. materi belajar)
+// dan status selesai untuk satu tanggal di bulan goal itu.
+model PlannerGoalDay {
+  id     String  @id @default(cuid())
+  goalId String
+  date   String
+  text   String  @default("")
+  done   Boolean @default(false)
+
+  @@unique([goalId, date])
+  @@index([goalId])
+}

@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import type { PlannerGoal } from "@prisma/client";
 import { monthLabel, shiftMonth } from "@/lib/dates";
 import BarisItem from "../BarisItem";
+import RoadmapGoal from "./RoadmapGoal";
 
 async function kirim(url: string, method: string, body?: unknown) {
   const res = await fetch(url, {
@@ -21,15 +22,18 @@ async function kirim(url: string, method: string, body?: unknown) {
 export default function PapanGoals({
   initialMonth,
   initialItems,
+  todayStr,
 }: {
   initialMonth: string;
   initialItems: PlannerGoal[];
+  todayStr: string;
 }) {
   const [month, setMonth] = useState(initialMonth);
   const [items, setItems] = useState(initialItems);
   const [text, setText] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [openId, setOpenId] = useState<string | null>(null);
 
   async function muat(bulan: string) {
     const data = await kirim(`/api/goals?month=${bulan}`, "GET");
@@ -91,16 +95,28 @@ export default function PapanGoals({
       <section className="mt-5 rounded-xl border border-line bg-panel p-4">
         <ul className="divide-y divide-line/60">
           {items.map((i) => (
-            <BarisItem
-              key={i.id}
-              text={i.text}
-              done={i.done}
-              onToggle={(done) =>
-                jalankan(() => kirim(`/api/goals/${i.id}`, "PATCH", { done }))
-              }
-              onSave={(t) => jalankan(() => kirim(`/api/goals/${i.id}`, "PATCH", { text: t }))}
-              onDelete={() => jalankan(() => kirim(`/api/goals/${i.id}`, "DELETE"))}
-            />
+            <Fragment key={i.id}>
+              <BarisItem
+                text={i.text}
+                done={i.done}
+                onToggle={(done) =>
+                  jalankan(() => kirim(`/api/goals/${i.id}`, "PATCH", { done }))
+                }
+                onSave={(t) => jalankan(() => kirim(`/api/goals/${i.id}`, "PATCH", { text: t }))}
+                onDelete={() => jalankan(() => kirim(`/api/goals/${i.id}`, "DELETE"))}
+              />
+              <li className="pb-1">
+                <button
+                  onClick={() => setOpenId(openId === i.id ? null : i.id)}
+                  className="text-xs font-bold text-accent hover:underline"
+                >
+                  {openId === i.id ? "Tutup roadmap harian" : "Roadmap harian (Day 1 - akhir bulan)"}
+                </button>
+                {openId === i.id && (
+                  <RoadmapGoal goalId={i.id} month={month} todayStr={todayStr} />
+                )}
+              </li>
+            </Fragment>
           ))}
           {items.length === 0 && (
             <li className="py-2 text-sm text-muted">

@@ -18,7 +18,7 @@ export default async function GoalsPage() {
         melihat atau menyusun bulan lain.
       </p>
       <div className="mt-6">
-        <PapanGoals initialMonth={now.monthStr} initialItems={items} />
+        <PapanGoals initialMonth={now.monthStr} initialItems={items} todayStr={now.dateStr} />
       </div>
     </div>
   );

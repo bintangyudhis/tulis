@@ -132,3 +132,17 @@ export function labelRentangMinggu(senin: string, minggu: string): string {
   if (m1 === m2) return `${d1} – ${d2} ${MONTH_NAMES[m1 - 1]} ${y1}`;
   return `${d1} ${MONTH_NAMES[m1 - 1]} – ${d2} ${MONTH_NAMES[m2 - 1]} ${y2}`;
 }
+
+// "Senin, 3 Nov" dari "2026-11-03", untuk label baris roadmap.
+export function hariSingkat(dateStr: string): string {
+  const [y, m, d] = dateStr.split("-").map((x) => parseInt(x, 10));
+  const wd = new Date(Date.UTC(y, m - 1, d)).getUTCDay();
+  const idx = wd === 0 ? 7 : wd;
+  return `${DAY_NAMES[idx - 1]}, ${d} ${MONTH_NAMES[m - 1].slice(0, 3)}`;
+}
+
+// Jumlah hari dalam bulan "YYYY-MM".
+export function jumlahHari(monthStr: string): number {
+  const [y, m] = monthStr.split("-").map((x) => parseInt(x, 10));
+  return new Date(Date.UTC(y, m, 0)).getUTCDate();
+}

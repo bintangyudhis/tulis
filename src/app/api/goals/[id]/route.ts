@@ -34,6 +34,7 @@ export async function DELETE(
 ) {
   if (!(await requireUser())) return unauthorized();
   const { id } = await params;
+  await prisma.plannerGoalDay.deleteMany({ where: { goalId: id } });
   await prisma.plannerGoal.delete({ where: { id } });
   return NextResponse.json({ ok: true });
 }
