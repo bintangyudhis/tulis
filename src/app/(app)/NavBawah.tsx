@@ -81,7 +81,7 @@ export default function NavBawah() {
   const lainnyaAktif = LAINNYA.some((m) => aktif(m.href));
 
   return (
-    <div className="fixed inset-x-0 bottom-0 z-40 md:hidden">
+    <div className="fixed inset-x-0 bottom-0 z-40 md:hidden print:hidden">
       {terbuka && (
         <div className="border-t border-line bg-panel px-3 pt-2 pb-1 shadow-[0_-6px_20px_rgba(0,0,0,0.08)]">
           <div className="grid grid-cols-3 gap-1">

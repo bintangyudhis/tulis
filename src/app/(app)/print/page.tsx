@@ -200,15 +200,11 @@ export default async function PrintPage({
         </form>
       )}
 
+      <div className="overflow-x-auto pb-2 print:overflow-visible print:pb-0">
       <div
-        className={`overflow-x-auto pb-2 print:overflow-visible print:pb-0 ${
-          jenis !== "todo" && jenis !== "keuangan" ? "print-bingkai" : ""
-        }`}
-      >
-      <div
-        className={`mt-6 rounded-xl border border-line bg-white p-5 print:rounded-none print:border-0 print:p-0 print:flex print:flex-col ${
+        className={`mt-6 rounded-xl border border-line bg-white p-5 print:rounded-none print:border-0 print:p-0 ${
           jenis === "todo" || jenis === "keuangan"
-            ? `sheet-portrait min-w-[580px]${jenis === "keuangan" ? " sheet-auto" : ""}`
+            ? "sheet-portrait min-w-[580px]"
             : "sheet-landscape min-w-[860px]"
         }`}
       >
@@ -216,16 +212,16 @@ export default async function PrintPage({
 
         {jenis === "harian" && (
           <>
-            <div className="mt-4 grid grid-cols-7 gap-px overflow-hidden rounded-lg border-2 border-ink bg-line print:flex-1 print:[grid-template-rows:1fr]">
+            <div className="mt-4 grid grid-cols-7 gap-px overflow-hidden rounded-lg border-2 border-ink bg-line">
               {DAYS.map((day) => (
                 <div key={day} className="flex flex-col bg-white">
                   {kepalaKolom(day)}
-                  <div className="flex flex-1 flex-col px-2 py-2">
+                  <div className="flex-1 px-2 py-2">
                     {PERIODS.map((p) => {
                       const items = cellGeneral(day, p);
                       if (items.length === 0) return null;
                       return (
-                        <div key={p} className="mt-2 flex-1">
+                        <div key={p} className="mt-2">
                           <div className="text-[9px] font-extrabold tracking-[0.14em] text-accent uppercase">
                             {p}
                           </div>
@@ -267,13 +263,13 @@ export default async function PrintPage({
         )}
 
         {jenis === "perjam" && (
-          <div className="mt-4 grid grid-cols-7 gap-px overflow-hidden rounded-lg border-2 border-ink bg-line print:flex-1 print:[grid-template-rows:1fr]">
+          <div className="mt-4 grid grid-cols-7 gap-px overflow-hidden rounded-lg border-2 border-ink bg-line">
             {DAYS.map((day) => (
               <div key={day} className="flex flex-col bg-white">
                 {kepalaKolom(day)}
-                <div className="flex flex-1 flex-col px-2 py-2">
+                <div className="flex-1 px-2 py-2">
                   {cellJam(day).length > 0 ? (
-                    <div className="flex flex-1 flex-col justify-between gap-1.5">
+                    <div className="space-y-1.5">
                       {cellJam(day).map((i) => (
                         <div key={i.id} className="text-[11px] leading-snug">
                           <span className="font-mono font-bold">
@@ -376,7 +372,7 @@ export default async function PrintPage({
         )}
 
         {jenis === "todo" && (
-          <div className="mt-4 grid grid-cols-2 gap-4 print:flex-1 print:auto-rows-fr">
+          <div className="mt-4 grid grid-cols-2 gap-4">
             {DAYS.map((day) => {
               const items = cellTodo(day);
               return (
@@ -420,7 +416,7 @@ export default async function PrintPage({
 
         {jenis === "kalender" && (
           <>
-            <div className="mt-4 grid grid-cols-7 gap-px overflow-hidden rounded-lg border-2 border-ink bg-line print:flex-1 print:auto-rows-fr">
+            <div className="mt-4 grid grid-cols-7 gap-px overflow-hidden rounded-lg border-2 border-ink bg-line">
               {DAY_NAMES.map((d) => (
                 <div
                   key={d}
@@ -473,7 +469,7 @@ export default async function PrintPage({
         )}
 
         {jenis === "gym" && (
-          <div className="mt-4 grid grid-cols-7 gap-px overflow-hidden rounded-lg border-2 border-ink bg-line print:flex-1 print:[grid-template-rows:1fr]">
+          <div className="mt-4 grid grid-cols-7 gap-px overflow-hidden rounded-lg border-2 border-ink bg-line">
             {DAYS.map((day) => {
               const setting = gymDayMap.get(day);
               return (
