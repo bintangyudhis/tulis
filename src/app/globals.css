@@ -39,8 +39,10 @@ textarea:focus-visible {
   margin: 10mm;
 }
 
+/* Halaman untuk lembar lebar: kertasnya portrait, isinya yang
+   diputar 90 derajat di dalam bingkai (lihat .sheet-landscape). */
 @page pg-landscape {
-  size: A4 landscape;
+  size: A4 portrait;
   margin: 10mm;
 }
 
@@ -81,15 +83,33 @@ textarea:focus-visible {
   .print-block {
     display: block !important;
   }
-  /* Lembar memenuhi kertas persis: tinggi sama dengan area cetak
-     A4 bermargin 10mm (landscape 190mm, portrait 277mm), margin atas
-     layar dibuang, dan luapan dipotong supaya tidak ada halaman
-     kedua yang kosong. */
+  /* Lembar lebar diputar 90 derajat di atas kertas portrait:
+     bingkai .print-bingkai menyediakan area cetak portrait penuh
+     (190 x 277mm), lembar 277 x 190mm diputar berlawanan arah jarum
+     jam mengelilingi titik asal kiri atas sehingga memenuhi bingkai
+     persis. Kertas hasil cetak dibaca dengan memutarnya searah
+     jarum jam. */
+  .print-bingkai {
+    position: relative;
+    height: 277mm;
+  }
   .sheet-landscape {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 277mm;
     height: 190mm;
     margin-top: 0 !important;
     overflow: hidden;
     break-inside: avoid;
+    transform-origin: 0 0;
+    transform: translateY(277mm) rotate(-90deg);
+  }
+  /* Lembar portrait yang isinya mengalir alami (laporan): jangan
+     dikunci setinggi kertas agar tabel panjang tidak terpotong. */
+  .sheet-auto {
+    height: auto !important;
+    overflow: visible;
   }
   .sheet-portrait {
     height: 277mm;
