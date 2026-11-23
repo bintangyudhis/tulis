@@ -10,6 +10,9 @@ import {
   monthLabel,
 } from "@/lib/dates";
 import { WARNA } from "@/lib/warna";
+import { transaksiBulan } from "@/lib/keuangan";
+import { formatRupiah } from "@/lib/uang";
+import { labelTanggalSingkat } from "@/lib/dates";
 import TombolPrint from "./TombolPrint";
 
 // Halaman print: satu jenis jadwal per cetakan, dipilih lewat tab.
@@ -25,6 +28,7 @@ const JENIS = [
   { key: "todo", label: "To Do List" },
   { key: "kalender", label: "Kalender" },
   { key: "gym", label: "Gym" },
+  { key: "keuangan", label: "Keuangan" },
 ] as const;
 
 type Jenis = (typeof JENIS)[number]["key"];
@@ -51,7 +55,7 @@ function Kaki() {
 export default async function PrintPage({
   searchParams,
 }: {
-  searchParams: Promise<{ jenis?: string }>;
+  searchParams: Promise<{ jenis?: string; bulan?: string }>;
 }) {
   await connection();
   const sp = await searchParams;
@@ -59,8 +63,12 @@ export default async function PrintPage({
     ? (sp.jenis as Jenis)
     : "harian";
   const now = jakartaNow();
+  const bulan =
+    typeof sp.bulan === "string" && /^\d{4}-\d{2}$/.test(sp.bulan)
+      ? sp.bulan
+      : now.monthStr;
 
-  const [jadwal, gymDays, gymItems, goals, marks] = await Promise.all([
+  const [jadwal, gymDays, gymItems, goals, marks, uang] = await Promise.all([
     prisma.plannerSchedule.findMany({
       orderBy: [{ day: "asc" }, { sort: "asc" }, { createdAt: "asc" }],
     }),
@@ -76,7 +84,19 @@ export default async function PrintPage({
       where: { date: { startsWith: now.monthStr } },
       orderBy: { date: "asc" },
     }),
+    transaksiBulan(bulan, now.dateStr),
   ]);
+  const uangUrut = [...uang].sort(
+    (a, b) =>
+      a.date.localeCompare(b.date) ||
+      a.createdAt.getTime() - b.createdAt.getTime(),
+  );
+  const totalMasuk = uang
+    .filter((i) => i.kind === "in")
+    .reduce((a, i) => a + i.amount, 0);
+  const totalKeluar = uang
+    .filter((i) => i.kind === "out")
+    .reduce((a, i) => a + i.amount, 0);
   const gymDayMap = new Map(gymDays.map((d) => [d.day, d]));
   const markMap = new Map(marks.map((m) => [m.date, m]));
 
@@ -99,11 +119,15 @@ export default async function PrintPage({
         ? "To Do List Mingguan"
         : jenis === "kalender"
           ? `Kalender ${monthLabel(now.monthStr)}`
-          : "Jadwal Gym";
+          : jenis === "keuangan"
+            ? `Laporan Keuangan ${monthLabel(bulan)}`
+            : "Jadwal Gym";
   const subSheet =
     jenis === "kalender"
       ? `${dateLabel(now.dateStr)} — tanda berwarna bulan ini`
-      : "Berlaku setiap minggu";
+      : jenis === "keuangan"
+        ? `Periode ${monthLabel(bulan)}`
+        : "Berlaku setiap minggu";
 
   const kepalaKolom = (day: number) => (
     <div
@@ -134,7 +158,11 @@ export default async function PrintPage({
         {JENIS.map((j) => (
           <Link
             key={j.key}
-            href={`/print?jenis=${j.key}`}
+            href={
+              j.key === "keuangan"
+                ? `/print?jenis=keuangan&bulan=${bulan}`
+                : `/print?jenis=${j.key}`
+            }
             className={`rounded-lg px-4 py-2 text-sm font-bold ${
               jenis === j.key
                 ? "bg-accent text-white"
@@ -146,10 +174,38 @@ export default async function PrintPage({
         ))}
       </div>
 
+      {jenis === "keuangan" && (
+        <form
+          action="/print"
+          method="get"
+          className="no-print mt-4 flex flex-wrap items-center gap-2"
+        >
+          <input type="hidden" name="jenis" value="keuangan" />
+          <label className="text-sm font-bold" htmlFor="pilih-bulan">
+            Bulan laporan
+          </label>
+          <input
+            id="pilih-bulan"
+            type="month"
+            name="bulan"
+            defaultValue={bulan}
+            className="rounded-lg border border-line bg-panel px-3 py-2 text-sm font-bold"
+          />
+          <button
+            type="submit"
+            className="rounded-lg bg-accent px-4 py-2 text-sm font-bold text-white"
+          >
+            Tampilkan
+          </button>
+        </form>
+      )}
+
       <div className="overflow-x-auto pb-2 print:overflow-visible print:pb-0">
       <div
         className={`mt-6 rounded-xl border border-line bg-white p-5 print:rounded-none print:border-0 print:p-0 print:flex print:flex-col ${
-          jenis === "todo" ? "sheet-portrait min-w-[580px]" : "sheet-landscape min-w-[860px]"
+          jenis === "todo" || jenis === "keuangan"
+            ? "sheet-portrait min-w-[580px]"
+            : "sheet-landscape min-w-[860px]"
         }`}
       >
         <Kepala judul={judulSheet} sub={subSheet} />
@@ -234,6 +290,85 @@ export default async function PrintPage({
               </div>
             ))}
           </div>
+        )}
+
+        {jenis === "keuangan" && (
+          <>
+            <div className="mt-4 grid grid-cols-3 gap-3">
+              <div className="rounded-lg border-2 border-ink p-3">
+                <div className="text-[9px] font-extrabold tracking-[0.14em] text-muted uppercase">
+                  Total masuk
+                </div>
+                <div className="mt-0.5 text-[15px] font-extrabold">
+                  {formatRupiah(totalMasuk)}
+                </div>
+              </div>
+              <div className="rounded-lg border-2 border-ink p-3">
+                <div className="text-[9px] font-extrabold tracking-[0.14em] text-muted uppercase">
+                  Total keluar
+                </div>
+                <div className="mt-0.5 text-[15px] font-extrabold">
+                  {formatRupiah(totalKeluar)}
+                </div>
+              </div>
+              <div className="exact rounded-lg bg-accent-soft p-3">
+                <div className="text-[9px] font-extrabold tracking-[0.14em] text-accent uppercase">
+                  Selisih
+                </div>
+                <div className="mt-0.5 text-[15px] font-extrabold">
+                  {formatRupiah(totalMasuk - totalKeluar)}
+                </div>
+              </div>
+            </div>
+            {uangUrut.length === 0 ? (
+              <p className="mt-6 text-center text-[12px] text-muted">
+                Belum ada transaksi pada bulan ini.
+              </p>
+            ) : (
+              <table className="mt-4 w-full border-collapse text-[11px]">
+                <thead>
+                  <tr className="border-b-2 border-ink text-left">
+                    <th className="py-1.5 pr-2 font-extrabold">Tanggal</th>
+                    <th className="py-1.5 pr-2 font-extrabold">Keterangan</th>
+                    <th className="py-1.5 pr-2 text-right font-extrabold">Masuk</th>
+                    <th className="py-1.5 text-right font-extrabold">Keluar</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {uangUrut.map((i) => (
+                    <tr key={i.id} className="border-b border-line/70">
+                      <td className="py-1 pr-2 whitespace-nowrap">
+                        {labelTanggalSingkat(i.date)}
+                      </td>
+                      <td className="py-1 pr-2">
+                        {i.name}
+                        {i.recurringId ? " (tetap)" : ""}
+                      </td>
+                      <td className="py-1 pr-2 text-right font-mono">
+                        {i.kind === "in" ? formatRupiah(i.amount) : ""}
+                      </td>
+                      <td className="py-1 text-right font-mono">
+                        {i.kind === "out" ? formatRupiah(i.amount) : ""}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+                <tfoot>
+                  <tr className="border-t-2 border-ink font-extrabold">
+                    <td className="py-1.5 pr-2" colSpan={2}>
+                      Total
+                    </td>
+                    <td className="py-1.5 pr-2 text-right font-mono">
+                      {formatRupiah(totalMasuk)}
+                    </td>
+                    <td className="py-1.5 text-right font-mono">
+                      {formatRupiah(totalKeluar)}
+                    </td>
+                  </tr>
+                </tfoot>
+              </table>
+            )}
+          </>
         )}
 
         {jenis === "todo" && (

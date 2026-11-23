@@ -103,6 +103,10 @@ model PlannerNote {
   id        String   @id @default(cuid())
   title     String
   content   String   @default("")
+  // Kategori bebas, mis. Kuliah, Ide, Pribadi.
+  category  String?
+  // Lampiran foto sebagai data URL JPEG hasil kompres (maks 200 KB).
+  image     String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
